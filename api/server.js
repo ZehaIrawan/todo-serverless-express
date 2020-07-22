@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
-require('dotenv').config();
 const { connectDB, closeDB } = require('../config/db');
+require('dotenv').config();
 
 const app = express();
 const router = express.Router();
@@ -68,7 +68,7 @@ router.post(
 
       jwt.sign(
         payload,
-       process.env.jwtSecret,
+        process.env.jwtSecret,
         { expiresIn: '5 days' },
         (err, token) => {
           if (err) throw err;

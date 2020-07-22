@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
+require('dotenv').config();
 
 const connectDB = async () => {
+  console.log(process.env.mongoURI);
   try {
-    await mongoose.connect(db, {
+    await mongoose.connect(process.env.mongoURI, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,
@@ -21,7 +21,7 @@ const connectDB = async () => {
 
 const closeDB = async () => {
   try {
-		await mongoose.connection.close();
+    await mongoose.connection.close();
     console.log('MongoDB Disconnected...');
   } catch (error) {
     console.log(error.message);
