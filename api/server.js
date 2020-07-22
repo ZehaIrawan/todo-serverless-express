@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../src/models/User');
+const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
 const { connectDB, closeDB } = require('../config/db');
 require('dotenv').config();
