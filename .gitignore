@@ -6,11 +6,13 @@
 .pnp.js
 /config/default.json
 
+
 # testing
 /coverage
 
 # production
 /build
+/functions
 
 # misc
 .DS_Store
