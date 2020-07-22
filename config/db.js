@@ -10,7 +10,7 @@ const connectDB = async () => {
       useUnifiedTopology: true,
     });
 
-    console.log('MongoDB Connected...');
+    // console.log('MongoDB Connected...');
   } catch (err) {
     console.error(err.message);
     // Exit process with failure
@@ -21,7 +21,7 @@ const connectDB = async () => {
 const closeDB = async () => {
   try {
     await mongoose.connection.close();
-    console.log('MongoDB Disconnected...');
+    // console.log('MongoDB Disconnected...');
   } catch (error) {
     console.log(error.message);
   }
