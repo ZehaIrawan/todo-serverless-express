@@ -5,8 +5,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { check, validationResult } = require('express-validator');
-const { connectDB, closeDB } = require('../config/db');
 require('dotenv').config();
+const db = require('./server')
+
 
 const app = express();
 const router = express.Router();
@@ -35,7 +36,6 @@ router.post(
     const { email, password } = req.body;
 
     try {
-      connectDB();
       let user = await User.findOne({ email });
 
       if (!user) {
@@ -70,8 +70,6 @@ router.post(
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
-    } finally {
-      closeDB();
     }
   },
 );
@@ -97,7 +95,6 @@ router.post(
     const { firstName, email, password } = req.body;
 
     try {
-      connectDB();
       let user = await User.findOne({ email });
 
       if (user) {
@@ -136,8 +133,6 @@ router.post(
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
-    } finally {
-      closeDB();
     }
   },
 );

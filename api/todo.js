@@ -4,10 +4,10 @@ const express = require('express');
 const Todo = require('../models/Todo');
 const User = require('../models/User')
 const { check, validationResult } = require('express-validator');
-const { connectDB, closeDB } = require('../config/db');
 require('dotenv').config();
 const auth = require('../middleware/auth');
 const checkObjectId = require('../middleware/checkObjectId');
+const db = require('./server')
 
 const app = express();
 const router = express.Router();
@@ -28,7 +28,7 @@ router.post(
     }
 
     try {
-      connectDB()
+
        await User.findById(req.user.id).select('-password');
 
       const newTodo = new Todo({
@@ -42,8 +42,6 @@ router.post(
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
-    } finally{
-      closeDB()
     }
   },
 );
@@ -51,21 +49,17 @@ router.post(
 // Get Todo Belong to User
 router.get('/', auth, async (req, res) => {
   try {
-    connectDB();
     const todos = await Todo.find({ user: req.user.id }).sort({ date: -1 });
     res.json(todos);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
-  } finally {
-    closeDB();
   }
 });
 
 // Delete Todo
 router.delete('/:id', [auth, checkObjectId('id')], async (req, res) => {
   try {
-    connectDB()
     const todo = await Todo.findById(req.params.id);
 
     if (!todo) {
@@ -84,8 +78,6 @@ router.delete('/:id', [auth, checkObjectId('id')], async (req, res) => {
     console.error(err.message);
 
     res.status(500).send('Server Error');
-  }finally{
-    closeDB()
   }
 });
 
@@ -107,7 +99,6 @@ router.put(
     }
 
     try {
-      connectDB()
       const todo = await Todo.findById(req.params.id);
 
       if (!todo) {
@@ -128,8 +119,6 @@ router.put(
       console.error(err.message);
 
       res.status(500).send('Server Error');
-    } finally{
-      closeDB()
     }
   },
 );
