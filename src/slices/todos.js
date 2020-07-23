@@ -13,7 +13,7 @@ export const addTodo = createAsyncThunk(
 
   async (title) => {
     const body = { title: title };
-    const res = await api.post(`/netlify/functions/todo`, body);
+    const res = await api.post(`/.netlify/functions/todo`, body);
     return res.data;
   },
 );
