@@ -19,17 +19,9 @@ router.get('/api/hello', (req, res) => {
   res.send({ express: 'Hello From Express' });
 });
 
-router.post('/api/world', (req, res) => {
-  res.send(
-    `I received your POST request. This is what you sent me: ${req.body.post}`,
-  );
-});
-
-// @route    POST api/auth
-// @desc     Authenticate user & get token
-// @access   Public
+// User Signin
 router.post(
-  '/api/auth',
+  '/signin',
   [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists(),
@@ -84,7 +76,73 @@ router.post(
   },
 );
 
-app.use('/.netlify/functions/server', router); // path must route to lambda
+//User Signup
+router.post(
+  '/signup',
+  [
+    check('firstName', 'Name is required').not().isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check(
+      'password',
+      'Please enter a password with 6 or more characters',
+    ).isLength({ min: 6 }),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { firstName, email, password } = req.body;
+
+    try {
+      connectDB();
+      let user = await User.findOne({ email });
+
+      if (user) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User already exists' }] });
+      }
+
+      user = new User({
+        firstName,
+        email,
+        password,
+      });
+
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        payload,
+        process.env.jwtSecret,
+        { expiresIn: '5 days' },
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        },
+      );
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    } finally {
+      closeDB();
+    }
+  },
+);
+
+app.use('/.netlify/functions/auth', router); // path must route to lambda
 
 module.exports = app;
 module.exports.handler = serverless(app);
