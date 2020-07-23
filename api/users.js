@@ -2,8 +2,10 @@ const serverless = require('serverless-http');
 const bodyParser = require('body-parser');
 const express = require('express');
 const User = require('../models/User');
-const { connectDB, closeDB } = require('../config/db');
+
 const auth = require('../middleware/auth');
+
+const db = require('./server')
 
 const app = express();
 const router = express.Router();
@@ -15,7 +17,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 router.get('/', auth, async (req, res) => {
   try {
-    connectDB();
     let user = await User.findById(req.user.id).select([
       '-password',
       '-date',
@@ -30,8 +31,6 @@ router.get('/', auth, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
-  } finally {
-    closeDB();
   }
 });
 
